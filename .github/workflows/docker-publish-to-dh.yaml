@@ -1,0 +1,37 @@
+name: docker-publish-to-dh
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  docker-publish-to-dh:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - "1.0"
+          - "2.0"
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set image tags
+        run: |
+          echo "::set-env name=IMAGE_TAG::${{ matrix.version }}-sha-${GITHUB_SHA:0:7}"
+          echo "::set-env name=IMAGE_REPOSITORY::${GITHUB_REPOSITORY/docker-/}"
+
+      # https://github.com/docker/build-push-action
+      - uses: docker/build-push-action@v1
+        with:
+          # https://docs.docker.com/docker-hub/access-tokens/#create-an-access-token
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: ${{ matrix.version }}, ${{ env.IMAGE_TAG}}
+          repository: ${{ env.IMAGE_REPOSITORY }}
+          path: ${{ matrix.version }}
+          push: ${{ contains(github.ref, 'master') }}
