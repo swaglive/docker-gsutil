@@ -27,7 +27,7 @@ jobs:
           echo "::set-env name=IMAGE_REPOSITORY::${GITHUB_REPOSITORY/docker-/}"
 
       # https://github.com/docker/build-push-action
-      - uses: docker/build-push-action@v1
+      - uses: docker/build-push-action@v3
         with:
           # https://docs.docker.com/docker-hub/access-tokens/#create-an-access-token
           username: ${{ secrets.DOCKER_USERNAME }}
