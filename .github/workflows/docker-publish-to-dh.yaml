@@ -11,6 +11,11 @@ jobs:
       contents: read
       packages: write
 
+    strategy:
+      matrix:
+        version: ["384.0.1"]
+        python: ["3.7", "3.8", "3.9", "3.10"]
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -42,6 +47,9 @@ jobs:
       id: build
       with:
         context: .
+        build-args: |
+          version=${{ matrix.version }}
+          base=python:${{ matrix.python }}-alpine
         push: ${{ !steps.config.outputs.skip-push-to-registry }}
         labels: ${{ steps.meta.outputs.labels }}
         tags: ${{ steps.meta.outputs.tags }}
