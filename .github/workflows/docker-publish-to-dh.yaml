@@ -51,7 +51,6 @@ jobs:
           type=raw,value=${{ matrix.version }}-py${{ matrix.python }}
           type=semver,pattern={{major}},value=${{ matrix.version }}.0,enable=${{ matrix.python == '3.10' }}
           type=semver,pattern={{major}}.{{minor}},value=${{ matrix.version }}.0,enable=${{ matrix.python == '3.10' }}
-          type=semver,pattern={{major}}.{{minor}}.{{patch}},value=${{ matrix.version }}.0,enable=${{ matrix.python == '3.10' }}
 
     - name: Build
       uses: docker/build-push-action@v3
