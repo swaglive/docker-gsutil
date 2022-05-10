@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        version: ["384.0.1"]
+        version: ["5.10"]
         python: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
