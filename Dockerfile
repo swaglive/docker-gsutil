@@ -1,12 +1,10 @@
 ARG             base=python:3-alpine
 
-FROM            ${base} as google-cloud-sdk
-
-ARG             version=384.0.1
+FROM            ${base} as gsutil
 
 RUN             apk add --no-cache --virtual .build-deps \
                     curl && \
-                curl -sL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-${version}-linux-x86_64.tar.gz | tar xz && \
+                curl -sL https://storage.googleapis.com/pub/gsutil.tar.gz | tar xz && \
                 apk del .build-deps
 
 ###
@@ -15,12 +13,12 @@ FROM            ${base}
 
 ARG             CRCMOD_VERSION=1.7
 
-ENV             PATH="/google-cloud-sdk/bin:${PATH}"
+ENV             PATH="/gsutil/bin:${PATH}"
 
 ENTRYPOINT      ["gsutil"]
 CMD             ["version", "-l"]
 
-WORKDIR         /google-cloud-sdk
+WORKDIR         /gsutil
 
 RUN             apk add --virtual .build-deps \
                     ca-certificates \
@@ -32,6 +30,7 @@ RUN             apk add --virtual .build-deps \
                     ca-certificates && \
                 apk del .build-deps
 
-COPY            --from=google-cloud-sdk /google-cloud-sdk/bin bin
-COPY            --from=google-cloud-sdk /google-cloud-sdk/platform platform
-COPY            --from=google-cloud-sdk /google-cloud-sdk/lib lib
+COPY            --from=gsutil /gsutil bin
+
+COPY            .boto /home/.boto
+ENV             BOTO_PATH=/home/.boto
