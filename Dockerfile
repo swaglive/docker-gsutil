@@ -4,9 +4,14 @@ FROM            ${base}
 
 ARG             version=5.10
 ARG             CRCMOD_VERSION=1.7
-ARG             DOCKERIZE_VERSION=v0.6.1
+ARG             DOCKERIZE_VERSION=0.6.1
 
-COPY            .boto.tmpl /root/.boto.tmpl
+WORKDIR         /root
+
+COPY            .boto .boto
+
+ENTRYPOINT      ["dockerize", "-template", ".boto:.boto", "gsutil"]
+CMD             ["version", "-l"]
 
 RUN             apk add --virtual .build-deps \
                     ca-certificates \
@@ -20,9 +25,4 @@ RUN             apk add --virtual .build-deps \
                 apk add --virtual .run-deps \
                     ca-certificates && \
                 apk del .build-deps && \
-                wget https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz && \
-                tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz && \
-                rm dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
-
-ENTRYPOINT      ["dockerize", "-template", "/root/.boto.tmpl:/root/.boto", "gsutil"]
-CMD             ["version", "-l"]
+                wget -O - https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz | tar xz -C /usr/local/bin
