@@ -10,7 +10,7 @@ WORKDIR         /root
 
 COPY            .boto .boto
 
-ENTRYPOINT      ["dockerize", "-template", ".boto:.boto", "gsutil"]
+ENTRYPOINT      ["dockerize", "-template", "/root/.boto:/root/.boto", "gsutil"]
 CMD             ["version", "-l"]
 
 RUN             apk add --virtual .build-deps \
